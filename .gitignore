@@ -1,3 +1,5 @@
 .aptos/
 build/
 .idea/
+./deps/
+Move.toml
