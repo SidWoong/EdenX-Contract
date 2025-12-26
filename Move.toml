@@ -7,7 +7,7 @@ upgrade_policy = "compatible"
 edenx = "_"
 
 [dev-addresses]
-edenx = "_   "
+edenx = "_     "
 
 
 [dependencies]
