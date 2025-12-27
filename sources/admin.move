@@ -208,7 +208,13 @@ module edenx::admin {
 
     #[test_only]
     public fun initialize_for_test(admin: &signer) {
-        init_module(admin);
+        let admin_addr = signer::address_of(admin);
+
+        if (!exists<AdminConfig>(admin_addr)) {
+            init_module(admin);
+        };
+
+        assert!(exists<AdminConfig>(admin_addr), 999);
     }
 
     #[test_only]
