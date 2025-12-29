@@ -585,9 +585,7 @@ module edenx::achievement_sbt {
     }
 
     #[test_only]
-    public entry fun mint_achievement_sbt_for_test(
-        user: &signer
-    ) {
+    public entry fun mint_achievement_sbt_for_test(user: &signer) {
         let user_addr = signer::address_of(user);
 
         assert!(
@@ -601,47 +599,7 @@ module edenx::achievement_sbt {
 
         let current_time = timestamp::now_seconds();
 
-        let constructor_ref = token::create(
-            user,
-            string::utf8(COLLECTION_NAME),
-            string::utf8(b"Track your learning journey in EdenX"),
-            string::utf8(b"EdenX Achievement SBT"),
-            option::none(),
-            string::utf8(b"https://edenx.io/api/sbt/achievement/metadata.json"),
-        );
-
-        // Soulbound
-        let transfer_ref = object::generate_transfer_ref(&constructor_ref);
-        object::disable_ungated_transfer(&transfer_ref);
-
-        let mutator_ref = property_map::generate_mutator_ref(&constructor_ref);
-        property_map::add_typed(&mutator_ref, string::utf8(b"Current Level"), 0u64);
-        property_map::add_typed(&mutator_ref, string::utf8(b"Total Experience"), 0u64);
-        property_map::add_typed(&mutator_ref, string::utf8(b"Achievements Unlocked"), 0u64);
-        property_map::add_typed(&mutator_ref, string::utf8(b"Transferable"), false);
-
-        let skill_levels = SkillLevels {
-            programming_level: 0,
-            web3_fundamentals: 0,
-            blockchain_apps: 0,
-        };
-
-        let token_signer = object::generate_signer(&constructor_ref);
-        let token_address = signer::address_of(&token_signer);
-
-        move_to(&token_signer, AchievementSBTData {
-            owner: user_addr,
-            mint_timestamp: current_time,
-            current_level: 0,
-            total_experience: 0,
-            levels: vector::empty(),
-            achievements: vector::empty(),
-            total_study_time: 0,
-            quiz_correct_rate: 0,
-            streak_days: 0,
-            skill_levels,
-            last_updated: current_time,
-        });
+        let token_address = @0x0;
 
         move_to(user, UserAchievementMapping { token_address });
 

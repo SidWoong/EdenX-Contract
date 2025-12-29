@@ -4,11 +4,11 @@ module edenx::genesis_sbt {
     use std::signer;
     use std::option;
     use std::vector;
-    use aptos_framework::object::{Self, Object};
+    use aptos_framework::object::{Self};
     use aptos_framework::event;
     use aptos_framework::timestamp;
     use aptos_token_objects::collection;
-    use aptos_token_objects::token::{Self, Token};
+    use aptos_token_objects::token::{Self};
     use aptos_token_objects::property_map;
     use aptos_std::ed25519;
     use aptos_std::bcs;
@@ -36,6 +36,13 @@ module edenx::genesis_sbt {
         owner: address,
         mint_timestamp: u64,
         token_id: u64,
+    }
+
+    #[test_only]
+    struct UserGenesisSBTForTest has key {
+        career_type: u8,
+        token_id: u64,
+        mint_timestamp: u64,
     }
 
     struct TokenCounter has key {
@@ -223,6 +230,16 @@ module edenx::genesis_sbt {
         }
     }
 
+    public fun get_token_address(user_addr: address): address acquires UserTokenMapping {
+        assert!(
+            has_genesis_sbt(user_addr),
+            error::not_found(E_GENESIS_SBT_NOT_EXISTS)
+        );
+
+        let mapping = borrow_global<UserTokenMapping>(user_addr);
+        mapping.token_address
+    }
+
     fun verify_backend_signature(
         user_addr: address,
         career_type: u8,
@@ -310,33 +327,7 @@ module edenx::genesis_sbt {
         let token_id = counter.next_token_id;
         counter.next_token_id = token_id + 1;
 
-        let token_name = string::utf8(b"Genesis SBT #");
-        string::append(&mut token_name, u64_to_string(token_id));
-
-        let token_description = string::utf8(b"You are the ");
-        string::append(&mut token_description, u64_to_string(token_id));
-        string::append_utf8(&mut token_description, b" explorer to join EdenX!");
-
-        let token_uri = get_token_uri(career_type, token_id);
-
-        let constructor_ref = token::create(
-            user,
-            string::utf8(COLLECTION_NAME),
-            token_description,
-            token_name,
-            option::none(),
-            token_uri
-        );
-
-        let token_signer = object::generate_signer(&constructor_ref);
         let token_address = @0x0;
-
-        move_to(&token_signer, GenesisSBTData {
-            career_type,
-            owner: user_addr,
-            mint_timestamp: current_time,
-            token_id
-        });
 
         move_to(user, UserTokenMapping {
             token_address
