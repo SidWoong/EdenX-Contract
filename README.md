@@ -127,8 +127,6 @@ assert!(current_time - timestamp <= 300);
 - **Updatable but Non-Transferable** — a pioneering combination of *soulbound ownership* with *dynamic data*
 - **Real-Time Progress Tracking** — learning progress, levels, and achievements update continuously on-chain
 
-------
-
 ### **2. Dynamic Update Mechanism**
 
 **Key Differences from Genesis SBT:**
@@ -148,8 +146,6 @@ assert!(current_time - timestamp <= 300);
 - Quiz accuracy rate
 - Earned achievement badges
 
-------
-
 ### **3. Core Innovation**
 
 **Soulbound Ownership + Dynamic Metadata**
@@ -157,8 +153,6 @@ assert!(current_time - timestamp <= 300);
 - **Non-transferable** — permanently bound to the user’s address and cannot be traded
 - **Updatable** — metadata evolves in real time as learning progresses
 - **Backend-Authorized Updates** — all updates require backend signature verification to prevent cheating
-
-------
 
 ### **4. Security Mechanism**
 
