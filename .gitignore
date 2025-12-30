@@ -3,3 +3,4 @@ build/
 .idea/
 ./deps/
 Move.toml
+deploy.sh

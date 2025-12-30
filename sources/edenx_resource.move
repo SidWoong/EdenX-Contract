@@ -1,4 +1,6 @@
-module edenx::resource_account {
+module edenx::edenx_resource {
+    friend edenx::genesis_sbt;
+    friend edenx::achievement_sbt;
 
     use std::error;
     use std::signer;
@@ -6,12 +8,19 @@ module edenx::resource_account {
     use aptos_framework::account::SignerCapability;
     use aptos_framework::event;
     use aptos_framework::timestamp;
-    
+
     const E_RESOURCE_CAP_EXISTS: u64 = 1;
     const E_RESOURCE_CAP_NOT_EXISTS: u64 = 2;
+    const E_NOT_AUTHORIZED: u64 = 3;
+    const E_ALREADY_INITIALIZED: u64 = 4;
 
     struct ResourceAccountCap has key {
         signer_cap: SignerCapability,
+    }
+
+    struct InitializationState has key {
+        initialized: bool,
+        deployer: address
     }
 
     #[event]
@@ -22,15 +31,26 @@ module edenx::resource_account {
     }
 
     fun init_module(deployer: &signer) {
-        let deplpyer_addr = signer::address_of(deployer);
+        move_to(deployer, InitializationState {
+            initialized: false,
+            deployer: signer::address_of(deployer)
+        });
+    }
+
+    public entry fun initialize(deployer: &signer) acquires InitializationState {
+        let deployer_addr = signer::address_of(deployer);
+
+        let state = borrow_global_mut<InitializationState>(@edenx);
+        assert!(deployer_addr == state.deployer, error::permission_denied(E_NOT_AUTHORIZED));
+
+        assert!(!state.initialized, error::already_exists(E_ALREADY_INITIALIZED));
 
         assert!(
-            !exists<ResourceAccountCap>(deplpyer_addr),
+            !exists<ResourceAccountCap>(deployer_addr),
             error::already_exists(E_RESOURCE_CAP_EXISTS)
         );
 
-        let seed = b"edenx_resource_v1";
-
+        let seed = b"edenx";
         let (resource_signer, resource_cap) = account::create_resource_account(
             deployer,
             seed
@@ -42,9 +62,11 @@ module edenx::resource_account {
             signer_cap: resource_cap
         });
 
+        state.initialized = true;
+
         event::emit(ResourceAccountCreated {
             resource_address,
-            creator: deplpyer_addr,
+            creator: deployer_addr,
             timestamp: timestamp::now_seconds()
         });
     }

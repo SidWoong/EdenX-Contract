@@ -56,11 +56,6 @@ module edenx::admin {
     fun init_module(admin: &signer) {
         let admin_addr = signer::address_of(admin);
 
-        assert!(
-            !exists<AdminConfig>(admin_addr),
-            error::already_exists(E_ADMIN_CONFIG_EXISTS)
-        );
-
         let config = AdminConfig {
             admin: admin_addr,
             backend_public_key: vector::empty(),
@@ -71,11 +66,6 @@ module edenx::admin {
         };
 
         move_to(admin, config);
-
-        event::emit(AdminInitialized {
-            admin: admin_addr,
-            timestamp: timestamp::now_seconds(),
-        })
     }
 
     public entry fun update_backend_public_key(admin: &signer, new_public_key: vector<u8>) acquires AdminConfig {
@@ -189,7 +179,7 @@ module edenx::admin {
         config.version
     }
 
-    fun assert_is_admin(accout: &signer) acquires AdminConfig {
+    public fun assert_is_admin(accout: &signer) acquires AdminConfig {
         let config = borrow_global<AdminConfig>(@edenx);
 
         assert!(

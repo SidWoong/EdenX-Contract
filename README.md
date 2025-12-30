@@ -116,6 +116,60 @@ assert!(current_time - timestamp <= 300);
 
 ------
 
+## **Achievement SBT Design**
+
+### **1. Core Concept**
+
+**A Dynamic Learning Profile** — an evolving on-chain learning credential.
+
+**Key Features:**
+
+- **Updatable but Non-Transferable** — a pioneering combination of *soulbound ownership* with *dynamic data*
+- **Real-Time Progress Tracking** — learning progress, levels, and achievements update continuously on-chain
+
+------
+
+### **2. Dynamic Update Mechanism**
+
+**Key Differences from Genesis SBT:**
+
+| **Genesis SBT**  | **Achievement SBT**   |
+| ---------------- | --------------------- |
+| One-time minting | Continuously updated  |
+| Identity proof   | Learning record       |
+| Static metadata  | Dynamic metadata      |
+| “Who you are”    | “What you’ve learned” |
+
+**Updatable Data Includes:**
+
+- Current level
+- Completed task count
+- Total learning time
+- Quiz accuracy rate
+- Earned achievement badges
+
+------
+
+### **3. Core Innovation**
+
+**Soulbound Ownership + Dynamic Metadata**
+
+- **Non-transferable** — permanently bound to the user’s address and cannot be traded
+- **Updatable** — metadata evolves in real time as learning progresses
+- **Backend-Authorized Updates** — all updates require backend signature verification to prevent cheating
+
+------
+
+### **4. Security Mechanism**
+
+**Backend Signature Verification**
+
+- All minting and update operations require backend authorization
+- Ed25519 signatures with timestamps to prevent replay attacks
+- Protects against unauthorized operations and data tampering
+
+------
+
 ## **📌 Note**
 
 - **This is an ongoing project; new features are being added rapidly.**

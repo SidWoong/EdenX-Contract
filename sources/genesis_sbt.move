@@ -12,6 +12,7 @@ module edenx::genesis_sbt {
     use aptos_token_objects::property_map;
     use aptos_std::ed25519;
     use aptos_std::bcs;
+    use edenx::edenx_resource;
     use edenx::admin;
 
     const E_GENESIS_SBT_EXISTS: u64 = 1;
@@ -62,17 +63,24 @@ module edenx::genesis_sbt {
         timestamp: u64,
     }
 
-    fun init_module(deployer: &signer) {
+    fun init_module(_deployer: &signer) {}
+
+    public entry fun initialize_collection(admin: &signer) {
+        admin::assert_is_admin(admin);
+
+        let resource_signer = edenx_resource::get_resource_signer();
+
         collection::create_unlimited_collection(
-            deployer,
-           string::utf8(COLLECTION_DESCRIPTION),
+            &resource_signer,
+            string::utf8(COLLECTION_DESCRIPTION),
             string::utf8(COLLECTION_NAME),
             option::none(),
             string::utf8(COLLECTION_URI)
         );
-        move_to(deployer, TokenCounter {
+        move_to(admin, TokenCounter {
             next_token_id: 1,
         })
+
     }
 
     public entry fun mint_genesis_sbt(user: &signer, career_type: u8, backend_signature: vector<u8>, timestamp: u64) acquires TokenCounter {
@@ -118,8 +126,10 @@ module edenx::genesis_sbt {
 
         let token_uri = get_token_uri(career_type, token_id);
 
+        let resource_signer = edenx_resource::get_resource_signer();
+
         let constructor_ref = token::create_named_token(
-            user,
+            &resource_signer,
             string::utf8(COLLECTION_NAME),
             token_description,
             token_name,
@@ -128,6 +138,9 @@ module edenx::genesis_sbt {
         );
 
         let transfer_ref = object::generate_transfer_ref(&constructor_ref);
+        let linear_transfer_ref = object::generate_linear_transfer_ref(&transfer_ref);
+        object::transfer_with_ref(linear_transfer_ref, user_addr);
+
         object::disable_ungated_transfer(&transfer_ref);
 
         let mutator_ref = property_map::generate_mutator_ref(&constructor_ref);

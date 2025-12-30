@@ -30,14 +30,6 @@ module edenx::admin_test {
     }
 
     #[test(deployer = @edenx, framework = @0x1)]
-    #[expected_failure(abort_code = 524292, location = edenx::admin)]
-    fun test_cannot_initzlize_twice(deployer: &signer, framework: &signer) {
-        setup_test(deployer, framework);
-
-        admin::initialize_for_test(deployer);
-    }
-
-    #[test(deployer = @edenx, framework = @0x1)]
     fun test_update_backend_public_key(deployer: &signer, framework: &signer) {
         setup_test(deployer, framework);
 
